@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YouTube Clip Embed with Restart Button</title>
+    <style>
+      body {
+        background-color: black;
+        color: white;
+        font-family: Arial, sans-serif;
+      }
+      .video-container {
+        width: 100%;
+        max-width: 560px;
+        margin: 20px auto;
+      }
+      .yt-embedded-video {
+        width: 100%;
+        overflow: hidden;
+        aspect-ratio: 16/9;
+        pointer-events: none;
+      }
+      .yt-embedded-video iframe {
+        width: 300%;
+        height: 50%;
+        margin-left: -100%;
+      }
+      #restartButton {
+        display: block;
+        margin: 10px auto;
+        padding: 10px 20px;
+        background-color: #ff0000;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      #restartButton:hover {
+        background-color: #cc0000;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="video-container">
+      <div class="yt-embedded-video">
+        <iframe
+          id="youtubePlayer"
+          width="560"
+          height="315"
+          src="https://www.youtube.com/embed/FsD_gUbYsb8?si=tv3YlnWhKCionEmZ&amp;clip=UgkxAaVLIC5gbX8kr_-TrmjSOAgp4miTd0_E&amp;clipt=ELehBRjMpgY&autoplay=1&mute=0&loop=0&controls=0&color=white&modestbranding=1&rel=0&playsinline=1&enablejsapi=1"
+          title="YouTube video player"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen
+        ></iframe>
+      </div>
+      <button id="restartButton">Restart Clip</button>
+    </div>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+      let player;
+      const startTime = 183; // 3:03 in seconds
+      const endTime = 198; // 3:18 in seconds
+
+      function onYouTubeIframeAPIReady() {
+        player = new YT.Player("youtubePlayer", {
+          events: {
+            onReady: onPlayerReady,
+            onStateChange: onPlayerStateChange,
+          },
+        });
+      }
+
+      function onPlayerReady(event) {
+        document
+          .getElementById("restartButton")
+          .addEventListener("click", restartClip);
+      }
+
+      function onPlayerStateChange(event) {
+        if (event.data == YT.PlayerState.PLAYING) {
+          setTimeout(checkTime, 1000);
+        }
+      }
+
+      function checkTime() {
+        const currentTime = player.getCurrentTime();
+        if (currentTime >= endTime) {
+          player.pauseVideo();
+        } else if (player.getPlayerState() == YT.PlayerState.PLAYING) {
+          setTimeout(checkTime, 1000);
+        }
+      }
+
+      function restartClip() {
+        player.seekTo(startTime);
+        player.playVideo();
+      }
+    </script>
+  </body>
+</html>
